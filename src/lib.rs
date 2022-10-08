@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 
 use project_root::get_project_root;
 use tokio::fs;
@@ -15,8 +15,8 @@ pub fn append_path_to_root(path: &str) -> PathBuf {
 
 // TODO Model for config
 pub async fn get_config() -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-            let path = append_path_to_root("config.json");
-            let config_str = fs::read_to_string(path).await?;
+    let path = append_path_to_root("config.json");
+    let config_str = fs::read_to_string(path).await?;
 
-            Ok(serde_json::from_str(&config_str).unwrap())
+    Ok(serde_json::from_str(&config_str).unwrap())
 }

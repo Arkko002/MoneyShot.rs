@@ -1,6 +1,6 @@
-use crate::api::models::RealtimeCurrencyExchangeRate;
+use crate::api::models::ExchangeDetails;
 
 pub trait Notifier {
-    fn notify(self, details: RealtimeCurrencyExchangeRate) -> Option<()>;
+    fn notify(self, details: ExchangeDetails) -> Option<()>;
 }
 

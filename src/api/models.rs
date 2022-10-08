@@ -1,33 +1,77 @@
-use chrono::{DateTime, FixedOffset};
-use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
-#[derive(Deserialize, Debug)]
-pub struct ApiResponse {
-    #[serde(rename(deserialize = "Realtime Currency Exchange Rate"))]
-    pub exchangeDetails: RealtimeCurrencyExchangeRate
+use chrono::{DateTime, Utc};
+use serde::Serialize;
+
+#[derive(Debug, Serialize, Clone, Hash)]
+pub struct ExchangeDetails {
+    pub from: InstrumentCode,
+    pub to: InstrumentCode,
+    pub exchange_source: ExchangeSource,
+    pub exchange_rate: String,
+    pub datetime: String,
+    pub time_zone: String,
+    pub bid_price: String,
+    pub ask_price: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename(deserialize = "Realtime Currency Exchange Rate"))]
-pub struct RealtimeCurrencyExchangeRate {
-    #[serde(rename(deserialize = "1. From_Currency Code"))]
-    pub from_currency: String,
+impl PartialEq for ExchangeDetails {
+    fn eq(&self, other: &Self) -> bool {
+        self.from == other.from
+            && self.to == other.to
+            && self.exchange_source == other.exchange_source
+    }
 
-    #[serde(rename(deserialize = "3. To_Currency Code"))]
-    pub to_currency: String,
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+impl Eq for ExchangeDetails {}
 
-    #[serde(rename(deserialize = "5. Exchange Rate"))]
-    pub exchange_rate: String,
+#[derive(Debug, Serialize, Clone, PartialEq, Hash)]
+pub enum ExchangeSource {
+    Alpha,
+    Bitpanda,
+    Cryptowatch,
+}
 
-    #[serde(rename(deserialize = "6. Last Refreshed"))]
-    pub last_refreshed: String,
+#[derive(Debug, Serialize, Clone, PartialEq, Hash)]
+pub enum InstrumentCode {
+    EUR,
+    USD,
+    BTC,
+    ETH,
+    XMR,
+}
 
-    #[serde(rename(deserialize = "7. Time Zone"))]
-    pub time_zone: String,
+impl Display for InstrumentCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            InstrumentCode::EUR => write!(f, "EUR"),
+            InstrumentCode::BTC => write!(f, "BTC"),
+            InstrumentCode::USD => write!(f, "USD"),
+            InstrumentCode::ETH => write!(f, "ETH"),
+            InstrumentCode::XMR => write!(f, "XMR"),
+        }
+    }
+}
 
-    #[serde(rename(deserialize = "8. Bid Price"))]
-    pub bid_price: String,
+#[derive(Debug, Serialize)]
+pub enum TradeOperation {
+    BuyLong,
+    SellLong,
+}
 
-    #[serde(rename(deserialize = "9. Ask Price"))]
-    pub ask_price: String,
+#[derive(Debug, Serialize)]
+pub struct TradeFromApi {
+    pub trade_id: String,
+    pub amount: String,
+    pub side: TradeOperation,
+    pub instrument_code: InstrumentCode,
+    pub price: f64,
+    pub time: DateTime<Utc>,
+
+    pub fee_amount: String,
+    pub fee_currency: String,
+    pub fee_type: String,
 }

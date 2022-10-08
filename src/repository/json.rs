@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use money_shot::append_path_to_root;
 use tokio::fs;
 
-use crate::api::models::RealtimeCurrencyExchangeRate;
+use crate::api::models::ExchangeDetails;
 
 use super::repository::Storage;
 
@@ -21,11 +21,11 @@ impl Storage for JsonStorage {
         }
     }
 
-    async fn get_last_value(self) -> Option<crate::api::models::RealtimeCurrencyExchangeRate> {
+    async fn get_last_value(self) -> Option<ExchangeDetails> {
         todo!()
     }
 
-    async fn insert_new_value(self, value: RealtimeCurrencyExchangeRate) -> Option<()> {
+    async fn insert_new_value(self, value: ExchangeDetails) -> Option<()> {
         let value_serialized: String = serde_json::to_string_pretty(&value).unwrap();
         fs::write(self.path, value_serialized).await.unwrap();
 
